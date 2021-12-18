@@ -10,12 +10,17 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;*/
 
 
+import com.mashape.unirest.http.exceptions.UnirestException;
+import si.fri.rso.message.services.beans.MessageBean;
+
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
-        import javax.ws.rs.*;
+import javax.inject.Inject;
+import javax.ws.rs.*;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import java.util.logging.Logger;
 
 @ApplicationScoped
@@ -27,7 +32,10 @@ public class BorrowResource {
     private Client httpClient;
     private String baseUrl;
 
-    private Logger logger=Logger.getLogger(BorrowResource.class.getName());
+    @Inject
+    private MessageBean messageBean;
+
+    private Logger logger = Logger.getLogger(BorrowResource.class.getName());
 
     @PostConstruct
     private void init() {
@@ -42,5 +50,18 @@ public class BorrowResource {
                             array = @ArraySchema(schema = @Schema(implementation = NakupovalniSeznam.class))),
                     headers = {@Header(name = "X-Total-Count", schema = @Schema(type = "integer"))}
             )})*/
+
+    @POST
+    @Path("{id}/message")
+    public Response sendMessage(@PathParam("id") int borrowId) throws UnirestException {
+
+        boolean sent = messageBean.sendMessage(borrowId);
+
+        if (sent) {
+            return Response.status(Response.Status.CREATED).build();
+        } else {
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }
+    }
 
 }
