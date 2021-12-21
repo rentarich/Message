@@ -1,16 +1,8 @@
 package si.fri.rso.message.api.v1.resources;
 
-
-/*import com.kumuluz.ee.cors.annotations.CrossOrigin;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.headers.Header;
-import io.swagger.v3.oas.annotations.media.ArraySchema;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;*/
-
-
 import com.mashape.unirest.http.exceptions.UnirestException;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import si.fri.rso.message.services.beans.MessageBean;
 
 import javax.annotation.PostConstruct;
@@ -43,17 +35,16 @@ public class BorrowResource {
     }
 
 
-    /*@Operation(description = "Vrni vse sezname", summary = "Vrni seznam vseh nakupovalnih seznamov.", tags = "seznami", responses = {
-            @ApiResponse(responseCode = "200",
-                    description = "Vrnjen seznam nakupovalnih seznamov.",
-                    content = @Content(
-                            array = @ArraySchema(schema = @Schema(implementation = NakupovalniSeznam.class))),
-                    headers = {@Header(name = "X-Total-Count", schema = @Schema(type = "integer"))}
-            )})*/
-
     @POST
-    @Path("{id}/message")
-    public Response sendMessage(@PathParam("id") int borrowId) throws UnirestException {
+    @Operation(description = "Send message/notification to user email for borrow {borrowId} confirmation.", summary = "Send email confirmation", tags = "message", responses = {
+            @ApiResponse(responseCode = "201",
+                    description = "Email sent to user's email address."
+            ),
+            @ApiResponse(responseCode = "400",
+                    description = "Email wasn't send to user's email address."
+            )})
+    @Path("{borrowId}/message")
+    public Response sendMessage(@PathParam("borrowId") int borrowId) throws UnirestException {
 
         boolean sent = messageBean.sendMessage(borrowId);
 

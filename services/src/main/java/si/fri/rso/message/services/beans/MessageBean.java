@@ -39,7 +39,7 @@ public class MessageBean {
     @PersistenceContext(unitName = "item-jpa")
     private EntityManager em;
 
-    public boolean sendMessage(Integer borrowId) throws UnirestException {
+    public boolean sendMessage(Integer borrowId) {
         Borrow borrow=borrowBean.getBorrow(borrowId);
 
         JSONObject obj = new JSONObject();
@@ -63,6 +63,7 @@ public class MessageBean {
                     .header("x-rapidapi-key", "85bf59bff4msh767705b762b415bp15a380jsn9dfd0e4d08ea")
                     .body(obj.toString())
                     .asString();
+
             return true;
         }
         catch (Exception e){
@@ -72,4 +73,3 @@ public class MessageBean {
 
     }
 }
-
