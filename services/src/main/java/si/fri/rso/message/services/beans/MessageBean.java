@@ -1,5 +1,7 @@
 package si.fri.rso.message.services.beans;
 
+import com.kumuluz.ee.logs.LogManager;
+import org.eclipse.microprofile.metrics.annotation.Timed;
 import org.json.JSONObject;
 import si.fri.rso.message.models.Borrow;
 
@@ -11,15 +13,13 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.Unirest;
-import com.mashape.unirest.http.exceptions.UnirestException;
-import java.util.List;
+
 import java.util.UUID;
-import java.util.logging.Logger;
 
 
 @ApplicationScoped
 public class MessageBean {
-    private Logger log = Logger.getLogger(MessageBean.class.getName());
+    private com.kumuluz.ee.logs.Logger logger = LogManager.getLogger(MessageBean.class.getName());
     private String idBean;
 
     @Inject
@@ -28,17 +28,18 @@ public class MessageBean {
     @PostConstruct
     private void init(){
         idBean = UUID.randomUUID().toString();
-        log.info("Init bean: " + MessageBean.class.getSimpleName() + " idBean: " + idBean);
+        logger.info("Init bean: " + MessageBean.class.getSimpleName() + " idBean: " + idBean);
     }
 
     @PreDestroy
     private void destroy(){
-        log.info("Deinit bean: " + MessageBean.class.getSimpleName() + " idBean: " + idBean);
+        logger.info("Deinit bean: " + MessageBean.class.getSimpleName() + " idBean: " + idBean);
     }
 
     @PersistenceContext(unitName = "item-jpa")
     private EntityManager em;
 
+    @Timed
     public boolean sendMessage(Integer borrowId) {
         Borrow borrow=borrowBean.getBorrow(borrowId);
 
@@ -64,10 +65,11 @@ public class MessageBean {
                     .body(obj.toString())
                     .asString();
 
+            logger.info(response.getBody());
             return true;
         }
         catch (Exception e){
-            log.info(e.toString());
+            logger.warn("Unable to send email to person "+borrow.getPerson().getId()+". Error: "+e.toString());
             return false;
         }
 

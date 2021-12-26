@@ -1,20 +1,20 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: recommendation-deployment
+  name: message-deployment
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: recommendation
+      app: message
   template:
     metadata:
       labels:
-        app: recommendation
+        app: message
     spec:
       containers:
-        - image: ninavelikajne/recommendation-system
-          name: recommendation
+        - image: ninavelikajne/message:34
+          name: message
           env:
             - name: KUMULUZEE_DATASOURCES0_CONNECTIONURL
               value: jdbc:postgresql://fanny.db.elephantsql.com:5432/sewztpca
@@ -23,9 +23,21 @@ spec:
             - name: KUMULUZEE_DATASOURCES0_PASSWORD
               value: jviqrny5vLJYogFEeyBhAr7daifOAiwB
           ports:
-            - containerPort: 4444
+            - containerPort: 2222
               name: server
               protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /health/live
+              port: server
+            initialDelaySeconds: 20
+            periodSeconds: 3
+            readinessProbe:
+              httpGet:
+                path: /health/ready
+                port: server
+              initialDelaySeconds: 20
+              periodSeconds: 3
          
 
 ---
@@ -33,12 +45,12 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: recommendation
+  name: message
 spec:
   type: LoadBalancer
   ports:
-    - port: 4444
+    - port: 2222
       protocol: TCP
       targetPort: server
   selector:
-    app: recommendation
+    app: message
