@@ -17,6 +17,7 @@ import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.concurrent.CompletionStage;
 import java.util.logging.Logger;
 
 @ApplicationScoped
@@ -60,6 +61,30 @@ public class BorrowResource {
         } else {
             logger.info("Email could not be sent.");
             return Response.status(Response.Status.BAD_REQUEST).build();
+        }
+    }
+
+
+    @POST
+    @Operation(description = "ASYNC Send message/notification to user email for borrow {borrowId} confirmation.", summary = "Send email confirmation", tags = "message", responses = {
+            @ApiResponse(responseCode = "201",
+                    description = "Email sent to user's email address."
+            ),
+            @ApiResponse(responseCode = "400",
+                    description = "Email wasn't send to user's email address."
+            )})
+    @Path("{borrowId}/async")
+    @Counted
+    public CompletionStage<Void> sendMessageAsync(@PathParam("borrowId") int borrowId) throws UnirestException {
+
+        boolean sent = messageBean.sendMessage(borrowId);
+
+        if (sent) {
+            logger.info("Email successfully sent");
+            return (CompletionStage<Void>) Response.status(Response.Status.CREATED).build();
+        } else {
+            logger.info("Email could not be sent.");
+            return (CompletionStage<Void>) Response.status(Response.Status.BAD_REQUEST).build();
         }
     }
 
