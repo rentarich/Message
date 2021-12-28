@@ -14,6 +14,9 @@ public class Person {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    @OneToMany(fetch = FetchType.EAGER)
+    private List<Borrow> borrows;
+
     @Column(name = "username")
     private String username;
 
@@ -54,10 +57,6 @@ public class Person {
 
     @Column(name = "role")
     private String role;
-
-    @OneToMany(fetch = FetchType.EAGER)
-    private List<Borrow> borrows;
-
 
     public Integer getId() {
         return id;
