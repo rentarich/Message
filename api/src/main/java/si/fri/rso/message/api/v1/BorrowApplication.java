@@ -19,6 +19,6 @@ import javax.ws.rs.core.Application;
 @ApplicationPath("v1")
 @OpenAPIDefinition(info = @Info(title = "MessageAPI", version = "v2.0.0", contact = @Contact(email = "rentarich@gmail.com"), license = @License(name="RentarichLicense")), servers = @Server(url = "http://20.62.179.11/message/v1"), security
         = @SecurityRequirement(name = "openid-connect"))
-@CrossOrigin
+@CrossOrigin(name = "my-resource")
 public class BorrowApplication extends Application {
 }

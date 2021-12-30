@@ -13,7 +13,7 @@ spec:
         app: message
     spec:
       containers:
-        - image: ninavelikajne/message:2021-12-27-17-25-40
+        - image: ninavelikajne/message:2021-12-28-17-01-19
           name: message
           env:
             - name: KUMULUZEE_DATASOURCES0_CONNECTIONURL
